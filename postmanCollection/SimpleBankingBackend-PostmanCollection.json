@@ -1,0 +1,105 @@
+{
+	"info": {
+		"_postman_id": "edd61103-9dc5-4738-90d6-98620aaefcd6",
+		"name": "Simple Banking Backend",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3822332"
+	},
+	"item": [
+		{
+			"name": "Create Bank Account",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"accountNumber\": \"65656-565\",\n    \"owner\": \"Evren Tan\",\n    \"balance\": 100\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8081/account/v1/createBankAccount",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"account",
+						"v1",
+						"createBankAccount"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Deposit Money",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 20\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8081/account/v1/credit/65656-565",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"account",
+						"v1",
+						"credit",
+						"65656-565"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Withdraw Money",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 30\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8081/account/v1/debit/65656-565",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"account",
+						"v1",
+						"debit",
+						"65656-565"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
