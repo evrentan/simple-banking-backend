@@ -1,5 +1,6 @@
 package evrentan.example.simplebankingbackend.impl;
 
+import evrentan.example.simplebankingbackend.constant.ErrorMessage;
 import evrentan.example.simplebankingbackend.dto.model.DepositTransaction;
 import evrentan.example.simplebankingbackend.dto.model.WithdrawalTransaction;
 import evrentan.example.simplebankingbackend.dto.request.CreateBankAccountRequest;
@@ -10,6 +11,7 @@ import evrentan.example.simplebankingbackend.entity.BankAccountEntity;
 import evrentan.example.simplebankingbackend.entity.BankAccountTransactionEntity;
 import evrentan.example.simplebankingbackend.entity.TransactionEntity;
 import evrentan.example.simplebankingbackend.enums.Status;
+import evrentan.example.simplebankingbackend.exception.NotEnoughMoneyException;
 import evrentan.example.simplebankingbackend.mapper.BankAccountMapper;
 import evrentan.example.simplebankingbackend.mapper.TransactionMapper;
 import evrentan.example.simplebankingbackend.repository.BankAccountRepository;
@@ -52,6 +54,7 @@ public class BankAccountServiceImpl implements BankAccountService {
     @Override
     public CreateTransactionResponse depositMoney(String accountNumber, CreateTransactionRequest createTransactionRequest) {
         BankAccountEntity bankAccountEntity = this.bankAccountRepository.findByAccountNumber(accountNumber);
+        
         bankAccountEntity.setBalance(bankAccountEntity.getBalance().add(createTransactionRequest.getAmount()));
         this.bankAccountRepository.save(bankAccountEntity);
 
@@ -59,21 +62,7 @@ public class BankAccountServiceImpl implements BankAccountService {
                 .amount(createTransactionRequest.getAmount())
                 .build();
 
-        TransactionEntity transactionEntity = TransactionMapper.toEntity(depositTransaction);
-
-        this.transactionRepository.save(transactionEntity);
-
-        BankAccountTransactionEntity bankAccountTransactionEntity = BankAccountTransactionEntity.builder()
-                .bankAccountId(bankAccountEntity.getId())
-                .transactionId(transactionEntity.getId())
-                .build();
-
-        this.bankAccountTransactionRepository.save(bankAccountTransactionEntity);
-
-        return CreateTransactionResponse.builder()
-                .approvalCode(transactionEntity.getId())
-                .status(Status.OK.getStatus())
-                .build();
+        return this.executeTransaction(bankAccountEntity, TransactionMapper.toEntity(depositTransaction));
     }
 
     /**
@@ -84,6 +73,9 @@ public class BankAccountServiceImpl implements BankAccountService {
     @Override
     public CreateTransactionResponse withdrawMoney(String accountNumber, CreateTransactionRequest createTransactionRequest) {
         BankAccountEntity bankAccountEntity = this.bankAccountRepository.findByAccountNumber(accountNumber);
+
+        this.checkBankAccountBalance(createTransactionRequest, bankAccountEntity);
+
         bankAccountEntity.setBalance(bankAccountEntity.getBalance().subtract(createTransactionRequest.getAmount()));
 
         this.bankAccountRepository.save(bankAccountEntity);
@@ -92,20 +84,29 @@ public class BankAccountServiceImpl implements BankAccountService {
                 .amount(createTransactionRequest.getAmount())
                 .build();
 
-        TransactionEntity transactionEntity = TransactionMapper.toEntity(withdrawalTransaction);
+        return this.executeTransaction(bankAccountEntity, TransactionMapper.toEntity(withdrawalTransaction));
+    }
 
-        this.transactionRepository.save(transactionEntity);
+    private CreateTransactionResponse executeTransaction(BankAccountEntity bankAccountEntity, TransactionEntity entity) {
+
+        this.transactionRepository.save(entity);
 
         BankAccountTransactionEntity bankAccountTransactionEntity = BankAccountTransactionEntity.builder()
                 .bankAccountId(bankAccountEntity.getId())
-                .transactionId(transactionEntity.getId())
+                .transactionId(entity.getId())
                 .build();
 
         this.bankAccountTransactionRepository.save(bankAccountTransactionEntity);
 
         return CreateTransactionResponse.builder()
-                .approvalCode(transactionEntity.getId())
+                .approvalCode(entity.getId())
                 .status(Status.OK.getStatus())
                 .build();
+    }
+
+    private void checkBankAccountBalance(CreateTransactionRequest createTransactionRequest, BankAccountEntity bankAccountEntity) {
+        if (bankAccountEntity.getBalance().compareTo(createTransactionRequest.getAmount()) < 0) {
+            throw new NotEnoughMoneyException(ErrorMessage.NOT_ENOUGH_MONEY);
+        }
     }
 }
