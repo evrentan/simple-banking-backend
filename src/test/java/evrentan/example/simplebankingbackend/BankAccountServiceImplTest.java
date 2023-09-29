@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -111,6 +112,7 @@ class BankAccountServiceImplTest {
                 .accountNumber("123456789")
                 .owner("Test Account")
                 .balance(BigDecimal.valueOf(100))
+                .createdDate(LocalDateTime.now())
                 .build();
 
 
@@ -138,6 +140,7 @@ class BankAccountServiceImplTest {
                 .accountNumber("123456789")
                 .owner("Test Account")
                 .balance(BigDecimal.valueOf(100))
+                .createdDate(LocalDateTime.now())
                 .build();
 
 
