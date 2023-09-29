@@ -100,6 +100,33 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Get Bank Account Details",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8081/account/v1/65656-565",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"account",
+						"v1",
+						"65656-565"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
