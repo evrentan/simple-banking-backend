@@ -1,7 +1,9 @@
 package evrentan.example.simplebankingbackend;
 
 import evrentan.example.simplebankingbackend.dto.request.CreateBankAccountRequest;
+import evrentan.example.simplebankingbackend.dto.request.CreateTransactionRequest;
 import evrentan.example.simplebankingbackend.dto.response.CreateBankAccountResponse;
+import evrentan.example.simplebankingbackend.dto.response.CreateTransactionResponse;
 import evrentan.example.simplebankingbackend.entity.BankAccountEntity;
 import evrentan.example.simplebankingbackend.enums.Status;
 import evrentan.example.simplebankingbackend.exception.BankAccountExistsException;
@@ -93,5 +95,59 @@ class BankAccountServiceImplTest {
 
         verify(bankAccountRepository, times(1)).existsByAccountNumber(request.getAccountNumber());
         verify(bankAccountRepository, never()).save(any(BankAccountEntity.class));
+    }
+
+    @Test
+    @DisplayName("Deposit Money Test - Success Case")
+    void testDepositMoney_Success() {
+        String accountNumber = "123456789";
+
+        CreateTransactionRequest request = CreateTransactionRequest.builder()
+                .amount(BigDecimal.valueOf(10))
+                .build();
+
+        BankAccountEntity existingBankAccountEntity = BankAccountEntity.builder()
+                .id(UUID.randomUUID())
+                .accountNumber("123456789")
+                .owner("Test Account")
+                .balance(BigDecimal.valueOf(100))
+                .build();
+
+
+        when(bankAccountRepository.findByAccountNumber(accountNumber)).thenReturn(existingBankAccountEntity);
+
+        CreateTransactionResponse response = bankAccountService.depositMoney(accountNumber, request);
+
+        verify(bankAccountRepository).save(existingBankAccountEntity);
+
+        assertEquals(Status.OK.getStatus(), response.getStatus());
+        assertEquals(BigDecimal.valueOf(110), existingBankAccountEntity.getBalance());
+    }
+
+    @Test
+    @DisplayName("Withdraw Money Test - Success Case")
+    void testWithdrawMoney_Success() {
+        String accountNumber = "123456789";
+
+        CreateTransactionRequest request = CreateTransactionRequest.builder()
+                .amount(BigDecimal.valueOf(10))
+                .build();
+
+        BankAccountEntity existingBankAccountEntity = BankAccountEntity.builder()
+                .id(UUID.randomUUID())
+                .accountNumber("123456789")
+                .owner("Test Account")
+                .balance(BigDecimal.valueOf(100))
+                .build();
+
+
+        when(bankAccountRepository.findByAccountNumber(accountNumber)).thenReturn(existingBankAccountEntity);
+
+        CreateTransactionResponse response = bankAccountService.withdrawMoney(accountNumber, request);
+
+        verify(bankAccountRepository).save(existingBankAccountEntity);
+
+        assertEquals(Status.OK.getStatus(), response.getStatus());
+        assertEquals(BigDecimal.valueOf(90), existingBankAccountEntity.getBalance());
     }
 }
