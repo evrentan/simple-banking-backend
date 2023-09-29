@@ -1,17 +1,21 @@
 package evrentan.example.simplebankingbackend.impl;
 
 import evrentan.example.simplebankingbackend.constant.ErrorMessage;
+import evrentan.example.simplebankingbackend.dto.model.BankAccount;
 import evrentan.example.simplebankingbackend.dto.model.DepositTransaction;
+import evrentan.example.simplebankingbackend.dto.model.Transaction;
 import evrentan.example.simplebankingbackend.dto.model.WithdrawalTransaction;
 import evrentan.example.simplebankingbackend.dto.request.CreateBankAccountRequest;
 import evrentan.example.simplebankingbackend.dto.request.CreateTransactionRequest;
 import evrentan.example.simplebankingbackend.dto.response.CreateBankAccountResponse;
 import evrentan.example.simplebankingbackend.dto.response.CreateTransactionResponse;
+import evrentan.example.simplebankingbackend.dto.response.GetBankAccountDetailResponse;
 import evrentan.example.simplebankingbackend.entity.BankAccountEntity;
 import evrentan.example.simplebankingbackend.entity.BankAccountTransactionEntity;
 import evrentan.example.simplebankingbackend.entity.TransactionEntity;
 import evrentan.example.simplebankingbackend.enums.Status;
 import evrentan.example.simplebankingbackend.exception.BankAccountExistsException;
+import evrentan.example.simplebankingbackend.exception.NoBankAccountFoundException;
 import evrentan.example.simplebankingbackend.exception.NotEnoughMoneyException;
 import evrentan.example.simplebankingbackend.mapper.BankAccountMapper;
 import evrentan.example.simplebankingbackend.mapper.TransactionMapper;
@@ -20,6 +24,10 @@ import evrentan.example.simplebankingbackend.repository.BankAccountTransactionRe
 import evrentan.example.simplebankingbackend.repository.TransactionRepository;
 import evrentan.example.simplebankingbackend.service.BankAccountService;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 @Service
 public class BankAccountServiceImpl implements BankAccountService {
@@ -90,6 +98,38 @@ public class BankAccountServiceImpl implements BankAccountService {
                 .build();
 
         return this.executeTransaction(bankAccountEntity, TransactionMapper.toEntity(withdrawalTransaction));
+    }
+
+    /**
+     * @param accountNumber
+     * @return
+     */
+    @Override
+    public GetBankAccountDetailResponse getBankAccountDetails(String accountNumber) {
+        BankAccount bankAccount = BankAccountMapper.toDto(this.bankAccountRepository.findByAccountNumber(accountNumber));
+
+        if (Objects.isNull(bankAccount)) {
+            throw new NoBankAccountFoundException(ErrorMessage.BANK_ACCOUNT_NOT_FOUND);
+        }
+
+        GetBankAccountDetailResponse response = GetBankAccountDetailResponse.builder()
+                .accountNumber(bankAccount.getAccountNumber())
+                .owner(bankAccount.getOwner())
+                .balance(bankAccount.getBalance())
+                .createdDate(bankAccount.getCreatedDate().toString())
+                .build();
+
+        List<UUID> transactionIdList = this.bankAccountTransactionRepository.findByBankAccountId(bankAccount.getId()).stream().map(BankAccountTransactionEntity::getTransactionId).toList();
+
+        if (transactionIdList.isEmpty()) {
+            return response;
+        }
+
+        List<Transaction> transactionList = TransactionMapper.toDtoList(this.transactionRepository.findAllById(transactionIdList));
+
+        response.setTransactions(transactionList);
+
+        return response;
     }
 
     private CreateTransactionResponse executeTransaction(BankAccountEntity bankAccountEntity, TransactionEntity entity) {

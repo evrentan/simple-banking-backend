@@ -4,6 +4,7 @@ import evrentan.example.simplebankingbackend.dto.request.CreateBankAccountReques
 import evrentan.example.simplebankingbackend.dto.request.CreateTransactionRequest;
 import evrentan.example.simplebankingbackend.dto.response.CreateBankAccountResponse;
 import evrentan.example.simplebankingbackend.dto.response.CreateTransactionResponse;
+import evrentan.example.simplebankingbackend.dto.response.GetBankAccountDetailResponse;
 
 public interface BankAccountService {
 
@@ -12,4 +13,6 @@ public interface BankAccountService {
     CreateTransactionResponse depositMoney(String accountNumber, CreateTransactionRequest createTransactionRequest);
 
     CreateTransactionResponse withdrawMoney(String accountNumber, CreateTransactionRequest createTransactionRequest);
+
+    GetBankAccountDetailResponse getBankAccountDetails(String accountNumber);
 }

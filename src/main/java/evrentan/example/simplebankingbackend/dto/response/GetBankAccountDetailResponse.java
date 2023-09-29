@@ -1,10 +1,9 @@
 package evrentan.example.simplebankingbackend.dto.response;
 
-import evrentan.example.simplebankingbackend.entity.TransactionEntity;
+import evrentan.example.simplebankingbackend.dto.model.Transaction;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -19,6 +18,6 @@ public class GetBankAccountDetailResponse {
     private String accountNumber;
     private String owner;
     private BigDecimal balance;
-    private LocalDateTime createdDate;
-    private List<TransactionEntity> transactions;
+    private String createdDate;
+    private List<Transaction> transactions;
 }

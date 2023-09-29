@@ -4,6 +4,7 @@ import evrentan.example.simplebankingbackend.dto.request.CreateBankAccountReques
 import evrentan.example.simplebankingbackend.dto.request.CreateTransactionRequest;
 import evrentan.example.simplebankingbackend.dto.response.CreateBankAccountResponse;
 import evrentan.example.simplebankingbackend.dto.response.CreateTransactionResponse;
+import evrentan.example.simplebankingbackend.dto.response.GetBankAccountDetailResponse;
 import evrentan.example.simplebankingbackend.service.BankAccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -56,5 +57,17 @@ public class AccountController {
     })
     public ResponseEntity<CreateTransactionResponse> withdrawMoney(@PathVariable("accountNumber") String accountNumber, @RequestBody @NotNull CreateTransactionRequest createTransactionRequest) {
         return ResponseEntity.ok(this.bankAccountService.withdrawMoney(accountNumber, createTransactionRequest));
+    }
+
+    @GetMapping(value = "/{accountNumber}")
+    @Operation(summary = "Get Bank Account Detail")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode  = "200", description  = "Successfully Get Bank Account Detail"),
+            @ApiResponse(responseCode  = "400", description  = "Bad Request"),
+            @ApiResponse(responseCode  = "404", description  = "Not Found"),
+            @ApiResponse(responseCode  = "500", description  = "Internal Server Error")
+    })
+    public ResponseEntity<GetBankAccountDetailResponse> getBankAccountDetail(@PathVariable("accountNumber") String accountNumber) {
+        return ResponseEntity.ok(this.bankAccountService.getBankAccountDetails(accountNumber));
     }
 }

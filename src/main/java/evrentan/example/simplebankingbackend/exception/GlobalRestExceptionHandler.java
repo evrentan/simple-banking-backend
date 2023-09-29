@@ -27,6 +27,15 @@ public class GlobalRestExceptionHandler {
         return responseEntity(HttpStatus.CONFLICT, customRestError);
     }
 
+    @ExceptionHandler(NoBankAccountFoundException.class)
+    public ResponseEntity<ErrorResponse> noBankAccountFoundException(final Exception exception){
+        var customRestError = ErrorResponse.builder()
+                .message(exception.getMessage())
+                .build();
+
+        return responseEntity(HttpStatus.NOT_FOUND, customRestError);
+    }
+
     private static ResponseEntity<ErrorResponse> responseEntity(HttpStatus httpStatus, ErrorResponse errorResponse){
         return ResponseEntity.status(httpStatus.value())
                 .body(errorResponse);

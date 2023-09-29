@@ -4,7 +4,6 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -16,11 +15,7 @@ import java.util.UUID;
 @SuperBuilder
 public class Transaction {
 
-    public Transaction(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    private LocalDateTime date;
+    private String date;
     private BigDecimal amount;
     private String type;
     private UUID approvalCode;

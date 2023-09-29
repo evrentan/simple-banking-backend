@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 public class BankAccount {
 
+    private UUID id;
     private String accountNumber;
     private String owner;
     private BigDecimal balance;

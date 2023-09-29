@@ -16,9 +16,11 @@ public class BankAccountMapper {
             return null;
 
         return BankAccount.builder()
+                .id(bankAccountEntity.getId())
                 .accountNumber(bankAccountEntity.getAccountNumber())
                 .owner(bankAccountEntity.getOwner())
                 .balance(bankAccountEntity.getBalance())
+                .createdDate(bankAccountEntity.getCreatedDate())
                 .build();
     }
 

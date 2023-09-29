@@ -1,10 +1,10 @@
 package evrentan.example.simplebankingbackend.exception;
 
-public class    BankAccountExistsException extends RuntimeException {
+public class NoBankAccountFoundException extends RuntimeException {
 
     private String message;
 
-    public BankAccountExistsException(String message) {
+    public NoBankAccountFoundException(String message) {
         super(message);
         this.message = message;
     }
