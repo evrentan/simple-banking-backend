@@ -11,6 +11,7 @@ import evrentan.example.simplebankingbackend.entity.BankAccountEntity;
 import evrentan.example.simplebankingbackend.entity.BankAccountTransactionEntity;
 import evrentan.example.simplebankingbackend.entity.TransactionEntity;
 import evrentan.example.simplebankingbackend.enums.Status;
+import evrentan.example.simplebankingbackend.exception.BankAccountExistsException;
 import evrentan.example.simplebankingbackend.exception.NotEnoughMoneyException;
 import evrentan.example.simplebankingbackend.mapper.BankAccountMapper;
 import evrentan.example.simplebankingbackend.mapper.TransactionMapper;
@@ -40,6 +41,10 @@ public class BankAccountServiceImpl implements BankAccountService {
     @Override
     public CreateBankAccountResponse createBankAccount(CreateBankAccountRequest createBankAccountRequest) {
 
+        if (this.bankAccountRepository.existsByAccountNumber(createBankAccountRequest.getAccountNumber())) {
+            throw new BankAccountExistsException(ErrorMessage.BANK_ACCOUNT_EXISTS);
+        }
+
         BankAccountEntity bankAccountEntity = this.bankAccountRepository.save(BankAccountMapper.toEntity(createBankAccountRequest));
         CreateBankAccountResponse createBankAccountResponse = BankAccountMapper.toCreateBankAccountResponse(bankAccountEntity);
         createBankAccountResponse.setStatus(Status.OK.getStatus());
@@ -54,7 +59,7 @@ public class BankAccountServiceImpl implements BankAccountService {
     @Override
     public CreateTransactionResponse depositMoney(String accountNumber, CreateTransactionRequest createTransactionRequest) {
         BankAccountEntity bankAccountEntity = this.bankAccountRepository.findByAccountNumber(accountNumber);
-        
+
         bankAccountEntity.setBalance(bankAccountEntity.getBalance().add(createTransactionRequest.getAmount()));
         this.bankAccountRepository.save(bankAccountEntity);
 
