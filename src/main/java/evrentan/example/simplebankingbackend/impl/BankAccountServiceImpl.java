@@ -68,6 +68,8 @@ public class BankAccountServiceImpl implements BankAccountService {
     public CreateTransactionResponse depositMoney(String accountNumber, CreateTransactionRequest createTransactionRequest) {
         BankAccountEntity bankAccountEntity = this.bankAccountRepository.findByAccountNumber(accountNumber);
 
+        this.checkBankAccountExists(bankAccountEntity);
+
         bankAccountEntity.setBalance(bankAccountEntity.getBalance().add(createTransactionRequest.getAmount()));
         this.bankAccountRepository.save(bankAccountEntity);
 
@@ -86,6 +88,8 @@ public class BankAccountServiceImpl implements BankAccountService {
     @Override
     public CreateTransactionResponse withdrawMoney(String accountNumber, CreateTransactionRequest createTransactionRequest) {
         BankAccountEntity bankAccountEntity = this.bankAccountRepository.findByAccountNumber(accountNumber);
+
+        this.checkBankAccountExists(bankAccountEntity);
 
         this.checkBankAccountBalance(createTransactionRequest, bankAccountEntity);
 
@@ -130,6 +134,12 @@ public class BankAccountServiceImpl implements BankAccountService {
         response.setTransactions(transactionList);
 
         return response;
+    }
+
+    private <T> void checkBankAccountExists(T bankAccount) {
+        if (Objects.isNull(bankAccount)) {
+            throw new BankAccountExistsException(ErrorMessage.BANK_ACCOUNT_NOT_FOUND);
+        }
     }
 
     private CreateTransactionResponse executeTransaction(BankAccountEntity bankAccountEntity, TransactionEntity entity) {
