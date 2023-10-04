@@ -15,8 +15,9 @@ The backend application serves from [Simple Banking Backend End-Point][simple-ba
 6. [Running the Application in Docker](#running-the-application-in-docker)
 7. [Run Actuator](#run-actuator)
 8. [Run Swagger UI](#run-swagger-ui)
-9. [Extra Notes](#extra-notes)
-10. [Copyright](#copyright)
+9. [Run RabbitMQ](#run-rabbitmq)
+10. [Extra Notes](#extra-notes)
+11. [Copyright](#copyright)
 
 ## How to Contribute
 
@@ -35,6 +36,8 @@ For building and running the application belows are required;
 - [Spring Boot 3.1.4][spring-boot-version]
 - [JDK 17][java-version]
 - [Gradle 7.3 or above][gradle-version]
+- [RabbitMQ][rabbit-mq]
+- [Docker][docker]
 
 ## Coding Standards
 
@@ -85,6 +88,19 @@ Only health and caches endpoints are enabled by default. Configuration can be up
 ## Run Swagger UI
 [Swagger UI][swagger-ui] can be reached from [local url for Swagger UI][local-swagger-ui] and [production url for Swagger UI][production-swagger-ui].
 
+## Run RabbitMQ
+[RabbitMQ][rabbit-mq] is used for messaging between services. It can be run with the following command after getting the image from Docker Hub;
+
+```shell
+docker run --name simple-banking-rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.12-management
+```
+
+RabbitMQ management console can be reached from [local URL for RabbitMQ management console][local-rabbit-mq-management-console-url]. Default username and password are "guest".
+
+You need to create a new queue from "Queues and Streams" from RabbitMQ management console.
+
+![img.png](assets/images/rabbitMqManagementConsoleScreenshot.png)
+
 ## Extra Notes
 
 * The module can be booted with Spring Cloud Config Server or directly within the application. In order to boot the project within itself, enable the properties in application.properties file and disable bootstrap.properties file.
@@ -110,3 +126,6 @@ Please check the [LICENSE](LICENSE) file for more details.
 [production-swagger-ui]: https://simplebanking.com/api/v1/swagger-ui/index.html
 [staging-branch-github-link]: https://github.com/evrentan/simple-banking-backend/tree/staging
 [main-branch-github-link]: https://github.com/evrentan/simple-banking-backend/tree/main
+[rabbit-mq]: https://www.rabbitmq.com/
+[local-rabbit-mq-management-console-url]: http://localhost:15672/
+[docker]: https://www.docker.com/
