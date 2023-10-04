@@ -17,7 +17,7 @@ group = 'evrentan.example'
 version = '0.0.1-SNAPSHOT'
 
 java {
-    sourceCompatibility = '21'
+    sourceCompatibility = "21"
 }
 
 repositories {
@@ -54,3 +54,4 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+targetCompatibility = JavaVersion.VERSION_21

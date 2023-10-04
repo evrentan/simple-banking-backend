@@ -40,4 +40,8 @@ public class ErrorLogEntity implements Serializable {
     @Column(name = "created_date")
     @CreationTimestamp
     private LocalDateTime createdDate;
+
+    @Basic
+    @Column(name = "account_number")
+    private String accountNumber;
 }

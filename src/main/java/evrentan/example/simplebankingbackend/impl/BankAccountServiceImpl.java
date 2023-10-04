@@ -50,7 +50,7 @@ public class BankAccountServiceImpl implements BankAccountService {
     public CreateBankAccountResponse createBankAccount(CreateBankAccountRequest createBankAccountRequest) {
 
         if (this.bankAccountRepository.existsByAccountNumber(createBankAccountRequest.getAccountNumber())) {
-            throw new BankAccountExistsException(ErrorMessage.BANK_ACCOUNT_EXISTS);
+            throw new BankAccountExistsException(ErrorMessage.BANK_ACCOUNT_EXISTS, createBankAccountRequest.getAccountNumber());
         }
 
         BankAccountEntity bankAccountEntity = this.bankAccountRepository.save(BankAccountMapper.toEntity(createBankAccountRequest));
@@ -68,7 +68,7 @@ public class BankAccountServiceImpl implements BankAccountService {
     public CreateTransactionResponse depositMoney(String accountNumber, CreateTransactionRequest createTransactionRequest) {
         BankAccountEntity bankAccountEntity = this.bankAccountRepository.findByAccountNumber(accountNumber);
 
-        this.checkBankAccountExists(bankAccountEntity);
+        this.checkBankAccountExists(bankAccountEntity, accountNumber);
 
         bankAccountEntity.setBalance(bankAccountEntity.getBalance().add(createTransactionRequest.getAmount()));
         this.bankAccountRepository.save(bankAccountEntity);
@@ -89,7 +89,7 @@ public class BankAccountServiceImpl implements BankAccountService {
     public CreateTransactionResponse withdrawMoney(String accountNumber, CreateTransactionRequest createTransactionRequest) {
         BankAccountEntity bankAccountEntity = this.bankAccountRepository.findByAccountNumber(accountNumber);
 
-        this.checkBankAccountExists(bankAccountEntity);
+        this.checkBankAccountExists(bankAccountEntity, accountNumber);
 
         this.checkBankAccountBalance(createTransactionRequest, bankAccountEntity);
 
@@ -113,7 +113,7 @@ public class BankAccountServiceImpl implements BankAccountService {
         BankAccount bankAccount = BankAccountMapper.toDto(this.bankAccountRepository.findByAccountNumber(accountNumber));
 
         if (Objects.isNull(bankAccount)) {
-            throw new NoBankAccountFoundException(ErrorMessage.BANK_ACCOUNT_NOT_FOUND);
+            throw new NoBankAccountFoundException(ErrorMessage.BANK_ACCOUNT_NOT_FOUND, accountNumber);
         }
 
         GetBankAccountDetailResponse response = GetBankAccountDetailResponse.builder()
@@ -136,9 +136,9 @@ public class BankAccountServiceImpl implements BankAccountService {
         return response;
     }
 
-    private <T> void checkBankAccountExists(T bankAccount) {
+    private <T> void checkBankAccountExists(T bankAccount, String accountNumber) {
         if (Objects.isNull(bankAccount)) {
-            throw new BankAccountExistsException(ErrorMessage.BANK_ACCOUNT_NOT_FOUND);
+            throw new BankAccountExistsException(ErrorMessage.BANK_ACCOUNT_NOT_FOUND, accountNumber);
         }
     }
 
@@ -161,7 +161,7 @@ public class BankAccountServiceImpl implements BankAccountService {
 
     private void checkBankAccountBalance(CreateTransactionRequest createTransactionRequest, BankAccountEntity bankAccountEntity) {
         if (bankAccountEntity.getBalance().compareTo(createTransactionRequest.getAmount()) < 0) {
-            throw new NotEnoughMoneyException(ErrorMessage.NOT_ENOUGH_MONEY);
+            throw new NotEnoughMoneyException(ErrorMessage.NOT_ENOUGH_MONEY, bankAccountEntity.getAccountNumber());
         }
     }
 }

@@ -19,6 +19,7 @@ public class ErrorLogMapper {
                 .httpStatusCode(errorLog.getHttpStatusCode())
                 .message(errorLog.getMessage())
                 .createdDate(errorLog.getCreatedDate())
+                .accountNumber(errorLog.getAccountNumber())
                 .build();
     }
 
@@ -33,6 +34,7 @@ public class ErrorLogMapper {
                 .httpStatusCode(errorLogEntity.getHttpStatusCode())
                 .message(errorLogEntity.getMessage())
                 .createdDate(errorLogEntity.getCreatedDate())
+                .accountNumber(errorLogEntity.getAccountNumber())
                 .build();
     }
 
