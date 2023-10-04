@@ -3,7 +3,7 @@ package evrentan.example.simplebankingbackend.exception;
 import lombok.Getter;
 
 @Getter
-public class    BankAccountExistsException extends RuntimeException {
+public class BankAccountExistsException extends RuntimeException {
 
     private String message;
     private String accountNumber;
